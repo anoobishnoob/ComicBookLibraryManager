@@ -8,6 +8,7 @@ using System.Data.Entity;
 using ComicBookLibraryManagerWebApp.ViewModels;
 using System.Net;
 using System.Data.Entity.Infrastructure;
+using ComicBookShared.Data;
 
 namespace ComicBookLibraryManagerWebApp.Controllers
 {
@@ -16,11 +17,24 @@ namespace ComicBookLibraryManagerWebApp.Controllers
     /// </summary>
     public class ComicBooksController : Controller
     {
+
+        private Context _context = null;
+
+        public ComicBooksController()
+        {
+            _context = new Context();
+        }
+
+
         public ActionResult Index()
         {
             // TODO Get the comic books list.
             // Include the "Series" navigation property.
-            var comicBooks = new List<ComicBook>();
+            var comicBooks = _context.ComicBooks
+                    .Include(cb => cb.Series)
+                    .OrderBy(cb => cb.Series.Title)
+                    .ThenBy(cb => cb.IssueNumber)
+                    .ToList(); ;
 
             return View(comicBooks);
         }
