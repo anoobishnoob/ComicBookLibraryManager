@@ -28,13 +28,12 @@ namespace ComicBookLibraryManagerWebApp.Controllers
 
         public ActionResult Index()
         {
-            // TODO Get the comic books list.
-            // Include the "Series" navigation property.
+            
             var comicBooks = _context.ComicBooks
-                    .Include(cb => cb.Series)
-                    .OrderBy(cb => cb.Series.Title)
-                    .ThenBy(cb => cb.IssueNumber)
-                    .ToList(); ;
+                .Include(cb => cb.Series)
+                .OrderBy(cb => cb.Series.Title)
+                .ThenBy(cb => cb.IssueNumber)
+                .ToList(); ;
 
             return View(comicBooks);
         }
@@ -48,7 +47,12 @@ namespace ComicBookLibraryManagerWebApp.Controllers
 
             // TODO Get the comic book.
             // Include the "Series", "Artists.Artist", and "Artists.Role" navigation properties.
-            var comicBook = new ComicBook();
+            var comicBook = _context.ComicBooks
+                    .Include(cb => cb.Series)
+                    .Include(cb => cb.Artists.Select(a => a.Artist))
+                    .Include(cb => cb.Artists.Select(a => a.Role))
+                    .Where(cb => cb.Id == id)
+                    .SingleOrDefault();
 
             if (comicBook == null)
             {
